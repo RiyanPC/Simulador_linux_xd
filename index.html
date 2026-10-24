@@ -7,35 +7,64 @@
   <meta name="description" content="Simulador interactivo y visual de comandos básicos y avanzados de Linux. Aprende terminal GNU/Bash con sistema de archivos en tiempo real y misiones guiadas.">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="theme-tokyo">
+<body class="theme-caelestia-nocturne" data-wallpaper="nocturne">
+  <!-- Dynamic Desktop Wallpaper Layer -->
+  <div class="desktop-wallpaper-container" id="wallpaperContainer">
+    <div class="desktop-wallpaper active" id="wallpaperNocturne" style="background-image: url('assets/wallpapers/caelestia-nocturne.jpg');"></div>
+    <div class="desktop-wallpaper" id="wallpaperTwilight" style="background-image: url('assets/wallpapers/caelestia-twilight.jpg');"></div>
+    <div class="desktop-vignette"></div>
+  </div>
+
   <div class="app-container">
-    <!-- Top Desktop Environment Panel -->
-    <header class="top-panel" id="topPanel">
-      <div class="panel-left">
-        <div class="distro-brand">
-          <!-- Arch Linux SVG Icon -->
+    <!-- Floating Caelestia Quickshell Island Bar -->
+    <header class="top-panel caelestia-island-bar" id="topPanel">
+      <!-- Left Island: Distro Brand, App Launcher & Workspaces -->
+      <div class="island island-left">
+        <button class="distro-brand-btn" id="appLauncherBtn" title="Lanzador de aplicaciones Caelestia (Alt + Espacio)">
+          <!-- Caelestia / Arch Stylized SVG Icon -->
           <svg class="distro-logo" viewBox="0 0 300 300" fill="currentColor">
             <path d="M141.2 24.5c-4.4 10.8-9.4 22.8-15 36.1-4.7 11.2-18.4 43.1-30.5 70.8s-22.3 51.9-22.8 53.6c-.7 2.6-.7 3.3.3 3.6 1.1.4 3.7-2.7 13.9-16.7 17.5-24 23.3-31 29.4-35.1 11.8-7.9 27-6.2 38.2 4.1 6.3 5.9 12.2 14.1 27.5 38.6 12 19.3 14 22 16.3 22.3 1.9.2 2.8-.7 5.7-5.5 1.8-3.1 7.2-15.5 12-27.6s18.8-43.2 31.1-69.1c12.2-25.9 22.4-47.5 22.6-48 .7-1.3-.2-1.9-5.4-3.5-9.4-2.8-21.7-8.8-28.7-13.8-6.1-4.4-7.5-4.8-13.4-3.7-14.7 2.8-31.5-2.2-46.7-14-3.9-3.1-7.7-4.1-34.6 8z"/>
           </svg>
-          <span>Arch Linux</span>
-          <span class="distro-badge">Live Lab</span>
+          <span class="brand-name">Caelestia</span>
+          <span class="distro-badge">Hyprland</span>
+        </button>
+
+        <div class="workspaces-pill" id="workspacesContainer">
+          <button class="ws-btn active" data-workspace="1" title="Espacio 1: Terminal & Lab">1</button>
+          <button class="ws-btn" data-workspace="2" title="Espacio 2: Terminal Max">2</button>
+          <button class="ws-btn" data-workspace="3" title="Espacio 3: Archivos GUI">3</button>
+          <button class="ws-btn" data-workspace="4" title="Espacio 4: Misiones">4</button>
+          <button class="ws-btn" data-workspace="5" title="Espacio 5: Control & Btop">5</button>
         </div>
 
-        <div class="workspaces-pill">
-          <button class="ws-btn active" title="Espacio de Trabajo 1">1</button>
-          <button class="ws-btn" title="Espacio de Trabajo 2">2</button>
-          <button class="ws-btn" title="Espacio de Trabajo 3">3</button>
+        <div class="quick-dock-icons">
+          <button class="quick-icon-btn active" id="dockTermBtn" title="Terminal (Workspace 1)">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10z"/></svg>
+          </button>
+          <button class="quick-icon-btn" id="dockFilesBtn" title="Archivos GUI (Workspace 3)">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          </button>
+          <button class="quick-icon-btn" id="dockMissionsBtn" title="Misiones (Workspace 4)">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </button>
         </div>
       </div>
 
-      <div class="panel-center">
-        <div class="panel-title">
-          <span class="live-indicator"></span>
-          <span>bash 5.2 — usuario@arch-simulator</span>
+      <!-- Center Island: Media Widget & Active Window -->
+      <div class="island island-center">
+        <div class="bar-media-player" id="barMediaPlayer">
+          <div class="bar-eq-bars" id="audioEq">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <span class="bar-media-track" id="barMediaTitle">♪ Caelestia Ambient — Starlight</span>
+          <button class="bar-media-btn" id="barPlayBtn" title="Reproducir/Pausar Música Ambient">
+            <svg class="play-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+          </button>
         </div>
       </div>
 
-      <div class="panel-right">
+      <!-- Right Island: Telemetry, Toggles & Control Center -->
+      <div class="island island-right">
         <!-- Live System Metric Pills -->
         <div class="system-pill" title="Uso dinámico de CPU">
           <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-4H6V9h4V5h2v4h4v4h-4v4z"/></svg>
@@ -45,54 +74,65 @@
 
         <div class="system-pill" title="Memoria RAM en uso">
           <span>RAM:</span>
-          <span>4.9G / 16G</span>
+          <span id="ramPercent">4.9G / 16G</span>
         </div>
 
-        <div class="system-pill" id="liveClock" title="Hora del sistema">
-          --:--:--
-        </div>
+        <!-- Wallpaper Quick Switcher Button -->
+        <button class="action-btn wallpaper-pill-btn" id="wallpaperToggleBtn" title="Alternar Fondo Caelestia (Nocturne / Twilight)">
+          <span class="wallpaper-dot"></span>
+          <span id="wallpaperName">Nocturne</span>
+        </button>
 
         <!-- Sound Synthesizer Toggle -->
         <button class="action-btn active" id="soundToggleBtn" title="Activar/Desactivar sonido mecánico">
           <svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-          <span>Sonido: ON</span>
+          <span>FX: ON</span>
         </button>
 
         <!-- Theme Selector -->
-        <select class="theme-dropdown" id="themeSelect" title="Cambiar tema visual">
+        <select class="theme-dropdown" id="themeSelect" title="Paleta de Colores Caelestia / Material You">
+          <option value="caelestia-nocturne" selected>Caelestia Nocturne (MD3)</option>
+          <option value="caelestia-twilight">Caelestia Twilight (MD3)</option>
           <option value="tokyo">Tokyo Night</option>
           <option value="catppuccin">Catppuccin Mocha</option>
           <option value="matrix">Cyberpunk Matrix</option>
           <option value="nord">Nordic Dark</option>
         </select>
 
-        <!-- Reset Button -->
-        <button class="action-btn" id="resetFsBtn" title="Restaurar sistema de archivos a estado original">
-          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-          <span>Reiniciar VFS</span>
+        <div class="system-pill" id="liveClock" title="Hora del sistema">
+          --:--:--
+        </div>
+
+        <!-- Control Center Flyout Toggle Button -->
+        <button class="control-center-btn" id="controlCenterToggleBtn" title="Centro de Control Caelestia">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+          <span>Control</span>
         </button>
       </div>
     </header>
 
     <!-- Workspace Split -->
-    <main class="workspace-layout">
+    <main class="workspace-layout" id="workspaceLayout">
       <!-- Left: Interactive Terminal -->
       <section class="terminal-window" id="terminalWindow">
         <div class="window-header">
           <div class="window-controls">
-            <button class="ctrl-btn close" title="Cerrar"></button>
-            <button class="ctrl-btn minimize" title="Minimizar"></button>
-            <button class="ctrl-btn maximize" title="Maximizar"></button>
+            <button class="ctrl-btn close" id="termCloseBtn" title="Cerrar terminal (Alt + Q / Ctrl + Shift + W)"></button>
+            <button class="ctrl-btn minimize" id="termMinimizeBtn" title="Minimizar terminal"></button>
+            <button class="ctrl-btn maximize" id="termMaximizeBtn" title="Maximizar / Restaurar"></button>
           </div>
 
-          <div class="window-tabs">
-            <div class="window-tab">
+          <div class="window-tabs" id="windowTabsContainer">
+            <div class="window-tab active" data-tab-id="1">
               <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10z"/></svg>
-              <span>terminal — bash</span>
+              <span class="tab-label">kitty — bash 1</span>
+              <button class="tab-close-btn" title="Cerrar esta terminal">×</button>
             </div>
+            <button class="new-tab-btn" id="newTermTabBtn" title="Abrir nueva terminal (Ctrl + Shift + T)">+</button>
           </div>
 
           <div class="window-meta">
+            <span class="hypr-badge">Hyprland Active</span>
             <span>xterm-256color • UTF-8</span>
           </div>
         </div>
@@ -100,8 +140,27 @@
         <div id="terminalContainer" style="flex: 1; display: flex; flex-direction: column; min-height: 0;"></div>
       </section>
 
+      <!-- Terminal Closed Placeholder State -->
+      <div class="terminal-closed-placeholder" id="terminalPlaceholder" style="display: none;">
+        <div class="placeholder-card">
+          <div class="placeholder-icon">
+            <svg class="arch-placeholder-logo" viewBox="0 0 300 300" fill="currentColor">
+              <path d="M141.2 24.5c-4.4 10.8-9.4 22.8-15 36.1-4.7 11.2-18.4 43.1-30.5 70.8s-22.3 51.9-22.8 53.6c-.7 2.6-.7 3.3.3 3.6 1.1.4 3.7-2.7 13.9-16.7 17.5-24 23.3-31 29.4-35.1 11.8-7.9 27-6.2 38.2 4.1 6.3 5.9 12.2 14.1 27.5 38.6 12 19.3 14 22 16.3 22.3 1.9.2 2.8-.7 5.7-5.5 1.8-3.1 7.2-15.5 12-27.6s18.8-43.2 31.1-69.1c12.2-25.9 22.4-47.5 22.6-48 .7-1.3-.2-1.9-5.4-3.5-9.4-2.8-21.7-8.8-28.7-13.8-6.1-4.4-7.5-4.8-13.4-3.7-14.7 2.8-31.5-2.2-46.7-14-3.9-3.1-7.7-4.1-34.6 8z"/>
+            </svg>
+          </div>
+          <h3>Terminal Kitty / Bash Cerrada</h3>
+          <p>Has cerrado las terminales activas. Puedes volver a abrir una terminal en cualquier momento con los botones de Arch Linux.</p>
+          <div class="placeholder-actions">
+            <button class="open-term-btn-action" id="openTermFromPlaceholderBtn" title="Abrir terminal Arch Linux">
+              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10z"/></svg>
+              <span>+ Abrir Terminal</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Right: Companion Panel with Tabs -->
-      <aside class="sidebar-panel">
+      <aside class="sidebar-panel" id="sidebarPanel">
         <nav class="sidebar-tabs">
           <button class="sidebar-tab-btn active" data-tab="tabExplorer">
             <svg viewBox="0 0 24 24"><path fill="currentColor" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
@@ -177,6 +236,239 @@
       </aside>
     </main>
   </div>
+
+  <!-- Caelestia Control Center (Quick Settings Flyout) -->
+  <aside class="caelestia-control-center" id="controlCenterPanel" aria-hidden="true">
+    <div class="cc-header">
+      <div class="cc-user">
+        <div class="cc-avatar">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+        <div class="cc-user-info">
+          <span class="cc-username">usuario@arch-caelestia</span>
+          <span class="cc-status">Hyprland v0.41 • Quickshell</span>
+        </div>
+      </div>
+      <div class="cc-power-actions">
+        <button class="cc-power-btn" id="resetFsBtn" title="Restaurar sistema de archivos original">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        </button>
+        <button class="cc-power-btn" id="ccCloseBtn" title="Cerrar panel">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Toggles Grid -->
+    <div class="cc-toggles-grid">
+      <button class="cc-toggle-tile active" id="toggleWifiBtn">
+        <div class="tile-icon">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4zm0 3c3.67 0 7.02 1.41 9.54 3.73L12 19.33 2.46 10.73C4.98 8.41 8.33 7 12 7z"/></svg>
+        </div>
+        <div class="tile-label">
+          <span class="tile-title">Wi-Fi</span>
+          <span class="tile-subtitle" id="wifiStatusText">Caelestia-5G</span>
+        </div>
+      </button>
+
+      <button class="cc-toggle-tile active" id="toggleBluetoothBtn">
+        <div class="tile-icon">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg>
+        </div>
+        <div class="tile-label">
+          <span class="tile-title">Bluetooth</span>
+          <span class="tile-subtitle" id="btStatusText">Buds Pro</span>
+        </div>
+      </button>
+
+      <button class="cc-toggle-tile active" id="ccToggleSoundBtn">
+        <div class="tile-icon">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        </div>
+        <div class="tile-label">
+          <span class="tile-title">Mecánico FX</span>
+          <span class="tile-subtitle" id="fxStatusText">Activado</span>
+        </div>
+      </button>
+
+      <button class="cc-toggle-tile active" id="toggleGlowBtn">
+        <div class="tile-icon">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.6-6.2 4.6 2.3-7.3-6.1-4.5h7.6z"/></svg>
+        </div>
+        <div class="tile-label">
+          <span class="tile-title">Hypr Glow</span>
+          <span class="tile-subtitle" id="glowStatusText">Animado</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- Sliders Section -->
+    <div class="cc-sliders-card">
+      <div class="cc-slider-row">
+        <svg class="slider-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        <input type="range" class="cc-slider" id="ccVolumeSlider" min="0" max="100" value="80" title="Volumen del sistema">
+        <span class="slider-value" id="ccVolumeVal">80%</span>
+      </div>
+
+      <div class="cc-slider-row">
+        <svg class="slider-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M20 15.31L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+        <input type="range" class="cc-slider" id="ccBrightnessSlider" min="30" max="100" value="100" title="Brillo / Transparencia">
+        <span class="slider-value" id="ccBrightnessVal">100%</span>
+      </div>
+    </div>
+
+    <!-- Media Player Widget -->
+    <div class="cc-media-card">
+      <div class="media-art-thumb">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+      </div>
+      <div class="media-info-block">
+        <span class="media-title" id="ccMediaTitle">Caelestia Ambient Lo-Fi</span>
+        <span class="media-artist" id="ccMediaArtist">Arch Starlight Waves</span>
+        <div class="media-progress-bar">
+          <div class="media-progress-fill" id="ccMediaProgress" style="width: 55%;"></div>
+        </div>
+      </div>
+      <div class="media-controls-row">
+        <button class="media-ctrl-btn" id="ccMediaPrevBtn" title="Anterior">⏮</button>
+        <button class="media-ctrl-btn play" id="ccMediaPlayBtn" title="Reproducir/Pausar">▶</button>
+        <button class="media-ctrl-btn" id="ccMediaNextBtn" title="Siguiente">⏭</button>
+      </div>
+    </div>
+
+    <!-- Wallpaper Selector Gallery -->
+    <div class="cc-wallpaper-section">
+      <span class="cc-section-title">Fondos de Pantalla Caelestia</span>
+      <div class="cc-wallpaper-grid">
+        <div class="wallpaper-card active" data-wp="nocturne" id="wpCardNocturne">
+          <div class="wp-card-preview" style="background-image: url('assets/wallpapers/caelestia-nocturne.jpg');"></div>
+          <span class="wp-card-name">Caelestia Nocturne</span>
+          <span class="wp-card-badge">Oscuro</span>
+        </div>
+        <div class="wallpaper-card" data-wp="twilight" id="wpCardTwilight">
+          <div class="wp-card-preview" style="background-image: url('assets/wallpapers/caelestia-twilight.jpg');"></div>
+          <span class="wp-card-name">Caelestia Twilight</span>
+          <span class="wp-card-badge">Atardecer</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Telemetry Stats -->
+    <div class="cc-telemetry-row">
+      <div class="telem-chip">
+        <span class="telem-label">CPU</span>
+        <span class="telem-val" id="ccCpuVal">18%</span>
+      </div>
+      <div class="telem-chip">
+        <span class="telem-label">RAM</span>
+        <span class="telem-val">4.9 / 16 GB</span>
+      </div>
+      <div class="telem-chip">
+        <span class="telem-label">Kernel</span>
+        <span class="telem-val">6.8.9-arch</span>
+      </div>
+      <div class="telem-chip">
+        <span class="telem-label">Shell</span>
+        <span class="telem-val">Quickshell</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Caelestia App Launcher Modal (Rofi / Walker) -->
+  <div class="caelestia-launcher-modal" id="appLauncherModal" aria-hidden="true">
+    <div class="launcher-dialog">
+      <div class="launcher-search-box">
+        <svg class="search-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="launcherSearch" placeholder="Buscar aplicaciones, herramientas o comandos (ej: bash, nano, misiones)..." autofocus spellcheck="false" autocomplete="off" />
+        <span class="launcher-shortcut-hint">ESC para cerrar</span>
+      </div>
+
+      <div class="launcher-grid" id="launcherGrid">
+        <div class="launcher-item" data-app="terminal">
+          <div class="app-icon-badge term">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10z"/></svg>
+          </div>
+          <div class="app-info">
+            <span class="app-title">Terminal Kitty / Bash</span>
+            <span class="app-desc">Consola interactiva GNU/Linux</span>
+          </div>
+        </div>
+
+        <div class="launcher-item" data-app="explorer">
+          <div class="app-icon-badge files">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          </div>
+          <div class="app-info">
+            <span class="app-title">Explorador de Archivos</span>
+            <span class="app-desc">Navegador visual de carpetas y permisos</span>
+          </div>
+        </div>
+
+        <div class="launcher-item" data-app="missions">
+          <div class="app-icon-badge missions">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <div class="app-info">
+            <span class="app-title">Misiones & Retos</span>
+            <span class="app-desc">Aprende Linux guiado paso a paso</span>
+          </div>
+        </div>
+
+        <div class="launcher-item" data-app="nano">
+          <div class="app-icon-badge editor">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </div>
+          <div class="app-info">
+            <span class="app-title">Editor GNU Nano</span>
+            <span class="app-desc">Editor de texto en terminal</span>
+          </div>
+        </div>
+
+        <div class="launcher-item" data-app="cheatsheet">
+          <div class="app-icon-badge cheat">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+          </div>
+          <div class="app-info">
+            <span class="app-title">Guía de Comandos</span>
+            <span class="app-desc">Cheat sheet interactivo y ejecutable</span>
+          </div>
+        </div>
+
+        <div class="launcher-item" data-app="wallpapers">
+          <div class="app-icon-badge wall">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          </div>
+          <div class="app-info">
+            <span class="app-title">Fondos Caelestia</span>
+            <span class="app-desc">Alternar Nocturne y Twilight</span>
+          </div>
+        </div>
+
+        <div class="launcher-item" data-app="control">
+          <div class="app-icon-badge control">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          </div>
+          <div class="app-info">
+            <span class="app-title">Centro de Control</span>
+            <span class="app-desc">Ajustes de audio, brillo y temas</span>
+          </div>
+        </div>
+
+        <div class="launcher-item" data-app="fastfetch">
+          <div class="app-icon-badge btop">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-4H6V9h4V5h2v4h4v4h-4v4z"/></svg>
+          </div>
+          <div class="app-info">
+            <span class="app-title">Fastfetch / Neofetch</span>
+            <span class="app-desc">Especificaciones del sistema Caelestia</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div class="caelestia-toasts" id="notificationsContainer"></div>
 
   <!-- Interactive Nano Text Editor Modal -->
   <div class="nano-modal-backdrop" id="nanoModal">

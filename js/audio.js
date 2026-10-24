@@ -130,6 +130,154 @@ class TerminalAudio {
       });
     } catch (e) {}
   }
+
+  playNotification() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const t = this.ctx.currentTime;
+      const notes = [659.25, 880]; // E5, A5
+      notes.forEach((freq, idx) => {
+        const noteTime = t + idx * 0.07;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, noteTime);
+
+        gain.gain.setValueAtTime(this.volume * 0.35, noteTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.2);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(noteTime);
+        osc.stop(noteTime + 0.2);
+      });
+    } catch (e) {}
+  }
+
+  playWorkspaceSwitch() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, t);
+      osc.frequency.exponentialRampToValueAtTime(640, t + 0.05);
+
+      gain.gain.setValueAtTime(this.volume * 0.2, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.07);
+    } catch (e) {}
+  }
+
+  playWindowAction() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(400, t);
+      osc.frequency.exponentialRampToValueAtTime(200, t + 0.04);
+
+      gain.gain.setValueAtTime(this.volume * 0.25, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.05);
+    } catch (e) {}
+  }
+
+  // Caelestia Ambient Lo-Fi Synthesizer
+  toggleAmbientMusic() {
+    this.init();
+    if (!this.ctx) return false;
+
+    if (this.ambientActive) {
+      this.stopAmbientMusic();
+      return false;
+    } else {
+      this.startAmbientMusic();
+      return true;
+    }
+  }
+
+  startAmbientMusic() {
+    if (this.ambientActive) return;
+    this.ambientActive = true;
+    this.ambientInterval = setInterval(() => {
+      if (!this.ambientActive) return;
+      this.playAmbientChord();
+    }, 4500);
+    this.playAmbientChord();
+  }
+
+  stopAmbientMusic() {
+    this.ambientActive = false;
+    if (this.ambientInterval) {
+      clearInterval(this.ambientInterval);
+      this.ambientInterval = null;
+    }
+  }
+
+  playAmbientChord() {
+    if (!this.ctx || !this.ambientActive) return;
+
+    try {
+      const t = this.ctx.currentTime;
+      // Dreamy chords: Dm9, Fmaj7, Am9, Gsus4
+      const chords = [
+        [293.66, 349.23, 440.0, 523.25, 659.25], // D4, F4, A4, C5, E5
+        [349.23, 440.0, 523.25, 659.25],         // F4, A4, C5, E5
+        [220.0, 329.63, 440.0, 523.25, 659.25],  // A3, E4, A4, C5, E5
+        [196.0, 293.66, 392.0, 523.25]           // G3, D4, G4, C5
+      ];
+      this.chordIdx = ((this.chordIdx || 0) + 1) % chords.length;
+      const notes = chords[this.chordIdx];
+
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+        osc.frequency.setValueAtTime(freq, t);
+
+        // Slow soft attack and long ethereal release
+        const noteVol = (this.volume * 0.15) / notes.length;
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(noteVol, t + 1.2);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 4.2);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(t);
+        osc.stop(t + 4.3);
+      });
+    } catch (e) {}
+  }
 }
 
 window.terminalAudio = new TerminalAudio();
+

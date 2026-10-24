@@ -123,6 +123,15 @@ class VirtualFileSystem {
                       group: 'usuario',
                       size: 112,
                       content: 'Recordatorio:\n1. Aprender a usar tuberías (pipes |).\n2. Configurar permisos con chmod 755.\n3. Practicar grep y sort.\n'
+                    },
+                    'guia_caelestia.md': {
+                      name: 'guia_caelestia.md',
+                      type: 'file',
+                      permissions: 'rw-r--r--',
+                      owner: 'usuario',
+                      group: 'usuario',
+                      size: 680,
+                      content: '# Caelestia Desktop Environment\n\nCaelestia es un ecosistema de escritorio moderno y visual sobre Arch Linux + Hyprland con Material Design 3.\n\n## Atajos y Comandos Principales:\n- `caelestia wallpaper [nocturne|twilight]`: Cambia el fondo y tema en tiempo real.\n- `caelestia info`: Muestra los componentes de Quickshell y Hyprland.\n- `fastfetch`: Resumen visual con logo ASCII de Arch/Caelestia.\n- `hyprctl workspaces`: Lista los espacios de trabajo.\n- `Alt + Espacio`: Abre el Lanzador de Aplicaciones (Rofi / Walker).\n- `Control`: Abre el Centro de Control rápido.\n'
                     }
                   }
                 },
@@ -192,14 +201,106 @@ class VirtualFileSystem {
                     }
                   }
                 },
+                'fondos': {
+                  name: 'fondos',
+                  type: 'dir',
+                  permissions: 'rwxr-xr-x',
+                  owner: 'usuario',
+                  group: 'usuario',
+                  mtime: new Date('2026-10-23T19:55:00'),
+                  children: {
+                    'caelestia-nocturne.jpg': {
+                      name: 'caelestia-nocturne.jpg',
+                      type: 'file',
+                      permissions: 'rw-r--r--',
+                      owner: 'usuario',
+                      group: 'usuario',
+                      size: 753562,
+                      content: '[Fondo de pantalla: Caelestia Nocturne - 3840x2160 UHD]'
+                    },
+                    'caelestia-twilight.jpg': {
+                      name: 'caelestia-twilight.jpg',
+                      type: 'file',
+                      permissions: 'rw-r--r--',
+                      owner: 'usuario',
+                      group: 'usuario',
+                      size: 699387,
+                      content: '[Fondo de pantalla: Caelestia Twilight - 3840x2160 UHD]'
+                    }
+                  }
+                },
+                '.config': {
+                  name: '.config',
+                  type: 'dir',
+                  permissions: 'rwxr-xr-x',
+                  owner: 'usuario',
+                  group: 'usuario',
+                  mtime: new Date('2026-10-23T19:55:00'),
+                  children: {
+                    'hypr': {
+                      name: 'hypr',
+                      type: 'dir',
+                      permissions: 'rwxr-xr-x',
+                      owner: 'usuario',
+                      group: 'usuario',
+                      children: {
+                        'hyprland.conf': {
+                          name: 'hyprland.conf',
+                          type: 'file',
+                          permissions: 'rw-r--r--',
+                          owner: 'usuario',
+                          group: 'usuario',
+                          size: 1420,
+                          content: '# ==========================================\n# CAELESTIA HYPRLAND CONFIGURATION\n# ==========================================\n\nmonitor=,preferred,auto,1\n\n$terminal = kitty\n$fileManager = thunar\n$menu = rofi -show drun\n$mainMod = SUPER\n\ngeneral {\n    gaps_in = 6\n    gaps_out = 12\n    border_size = 2\n    col.active_border = rgba(7aa2f7ee) rgba(bb9af7ee) 45deg\n    col.inactive_border = rgba(1a1e2daa)\n    layout = dwindle\n}\n\ndecoration {\n    rounding = 14\n    blur {\n        enabled = true\n        size = 8\n        passes = 3\n    }\n    drop_shadow = true\n    shadow_range = 25\n    col.shadow = rgba(080a1499)\n}\n\nanimations {\n    enabled = true\n    bezier = myBezier, 0.05, 0.9, 0.1, 1.05\n    animation = windows, 1, 6, myBezier\n    animation = border, 1, 10, default\n    animation = workspaces, 1, 5, default\n}\n\n# Keybindings\nbind = $mainMod, Return, exec, $terminal\nbind = $mainMod, Q, killactive,\nbind = $mainMod, M, exit,\nbind = $mainMod, E, exec, $fileManager\nbind = $mainMod, D, exec, $menu\nbind = $mainMod, W, exec, caelestia wallpaper next\nbind = $mainMod, 1, workspace, 1\nbind = $mainMod, 2, workspace, 2\nbind = $mainMod, 3, workspace, 3\nbind = $mainMod, 4, workspace, 4\nbind = $mainMod, 5, workspace, 5\n'
+                        }
+                      }
+                    },
+                    'caelestia': {
+                      name: 'caelestia',
+                      type: 'dir',
+                      permissions: 'rwxr-xr-x',
+                      owner: 'usuario',
+                      group: 'usuario',
+                      children: {
+                        'caelestia.conf': {
+                          name: 'caelestia.conf',
+                          type: 'file',
+                          permissions: 'rw-r--r--',
+                          owner: 'usuario',
+                          group: 'usuario',
+                          size: 680,
+                          content: '# Caelestia Quickshell & Dotfiles Configuration\nshell_daemon = true\ntheme = "caelestia-nocturne"\nmaterial_you_extraction = true\nwallpapers_dir = "~/fondos"\nactive_wallpaper = "~/fondos/caelestia-nocturne.jpg"\nbar_floating = true\nbar_position = "top"\ncontrol_center_hotkey = "SUPER + C"\nmechanical_audio_fx = true\n'
+                        }
+                      }
+                    },
+                    'fastfetch': {
+                      name: 'fastfetch',
+                      type: 'dir',
+                      permissions: 'rwxr-xr-x',
+                      owner: 'usuario',
+                      group: 'usuario',
+                      children: {
+                        'config.jsonc': {
+                          name: 'config.jsonc',
+                          type: 'file',
+                          permissions: 'rw-r--r--',
+                          owner: 'usuario',
+                          group: 'usuario',
+                          size: 320,
+                          content: '{\n  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",\n  "logo": { "source": "arch_small" },\n  "modules": ["title", "separator", "os", "host", "kernel", "uptime", "wm", "de", "shell", "terminal", "memory", "colors"]\n}\n'
+                        }
+                      }
+                    }
+                  }
+                },
                 '.bashrc': {
                   name: '.bashrc',
                   type: 'file',
                   permissions: 'rw-r--r--',
                   owner: 'usuario',
                   group: 'usuario',
-                  size: 260,
-                  content: '# ~/.bashrc: ejecutado por bash para shells no de login\nalias ll="ls -alF"\nalias la="ls -A"\nalias l="ls -CF"\nalias cls="clear"\nPS1="\\[\\033[01;32m\\]\\u@\\h\\[\\033[00m\\]:\\[\\033[01;34m\\]\\w\\[\\033[00m\\]\\$ "\n'
+                  size: 340,
+                  content: '# ~/.bashrc: entorno interactivo Caelestia Arch Linux\nalias ll="ls -alF"\nalias la="ls -A"\nalias l="ls -CF"\nalias cls="clear"\nalias ff="fastfetch"\nalias hypr="hyprctl"\nalias wp="caelestia wallpaper"\nPS1="\\[\\033[01;35m\\]󰣇 caelestia\\[\\033[00m\\] \\[\\033[01;34m\\]\\w\\[\\033[00m\\]  "\n'
                 },
                 '.bash_history': {
                   name: '.bash_history',
@@ -207,8 +308,8 @@ class VirtualFileSystem {
                   permissions: 'rw-------',
                   owner: 'usuario',
                   group: 'usuario',
-                  size: 94,
-                  content: 'ls\npwd\ncd documentos\ncat bienvenida.txt\nneofetch\n'
+                  size: 130,
+                  content: 'ls\ncaelestia info\nfastfetch\ncd .config/hypr\ncat hyprland.conf\ncaelestia wallpaper twilight\n'
                 }
               }
             }

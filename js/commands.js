@@ -836,6 +836,176 @@ class CommandEngine {
       return lines.join('\n');
     },
 
+    fastfetch: async function() {
+      const logo = [
+        '<span class="term-magenta">        /\\        </span>',
+        '<span class="term-magenta">       /  \\       </span>',
+        '<span class="term-magenta">      /\\   \\      </span>',
+        '<span class="term-cyan">     /      \\     </span>',
+        '<span class="term-cyan">    /   ,,   \\    </span>',
+        '<span class="term-cyan">   /   |  |  -\\   </span>',
+        '<span class="term-cyan">  /_-´´    ´´-_\\  </span>'
+      ];
+
+      const currentWp = (document.body.getAttribute('data-wallpaper') || 'nocturne');
+      const info = [
+        `<span class="term-bold term-magenta">usuario</span><span class="term-bold">@</span><span class="term-bold term-cyan">caelestia-arch</span>`,
+        `<span class="term-dim">--------------------------------</span>`,
+        `<span class="term-yellow">OS:</span> Arch Linux x86_64`,
+        `<span class="term-yellow">Host:</span> Caelestia Rice Station v2.5`,
+        `<span class="term-yellow">Kernel:</span> 6.8.9-arch1-1-zen`,
+        `<span class="term-yellow">Uptime:</span> 3 days, 4 hours, 12 mins`,
+        `<span class="term-yellow">Packages:</span> 914 (pacman)`,
+        `<span class="term-yellow">Shell:</span> bash 5.2.26`,
+        `<span class="term-yellow">WM:</span> Hyprland (Wayland)`,
+        `<span class="term-yellow">DE:</span> Caelestia Shell (Quickshell)`,
+        `<span class="term-yellow">Theme:</span> Caelestia ${currentWp.charAt(0).toUpperCase() + currentWp.slice(1)} [Material You MD3]`,
+        `<span class="term-yellow">Icons:</span> Papirus-Caelestia-Dark`,
+        `<span class="term-yellow">Terminal:</span> kitty 0.35.2`,
+        `<span class="term-yellow">CPU:</span> AMD Ryzen 9 7950X (32) @ 5.70GHz`,
+        `<span class="term-yellow">Memory:</span> 4.89GiB / 16.00GiB (30%)`,
+        ``,
+        `<span class="term-color-blocks">` +
+        `<span style="background:#1e1e2e;color:#1e1e2e">██</span>` +
+        `<span style="background:#f38ba8;color:#f38ba8">██</span>` +
+        `<span style="background:#a6e3a1;color:#a6e3a1">██</span>` +
+        `<span style="background:#f9e2af;color:#f9e2af">██</span>` +
+        `<span style="background:#89b4fa;color:#89b4fa">██</span>` +
+        `<span style="background:#cba6f7;color:#cba6f7">██</span>` +
+        `<span style="background:#94e2d5;color:#94e2d5">██</span>` +
+        `<span style="background:#cdd6f4;color:#cdd6f4">██</span></span>`
+      ];
+
+      const lines = [];
+      const maxRows = Math.max(logo.length, info.length);
+      for (let i = 0; i < maxRows; i++) {
+        const l = logo[i] || '                  ';
+        const r = info[i] || '';
+        lines.push(`${l}  ${r}`);
+      }
+      return lines.join('\n');
+    },
+
+    caelestia: async function(args) {
+      const sub = args[0] ? args[0].toLowerCase() : 'help';
+      
+      if (sub === 'wallpaper' || sub === 'wp') {
+        const wp = args[1] ? args[1].toLowerCase() : 'next';
+        if (window.switchCaelestiaWallpaper) {
+          const current = window.switchCaelestiaWallpaper(wp);
+          return `<span class="term-bold term-magenta">🌌 [Caelestia Shell]</span> Fondo cambiado a: <span class="term-cyan">${current.toUpperCase()}</span>`;
+        }
+        return 'Comando de fondo ejecutado.';
+      }
+
+      if (sub === 'info' || sub === 'specs') {
+        return [
+          '<span class="term-bold term-magenta">╭───────────────────────────────────────────────────╮</span>',
+          '<span class="term-bold term-magenta">│</span> <span class="term-bold term-cyan">CAELESTIA DESKTOP ENVIRONMENT</span> — Arch Linux Rice    <span class="term-bold term-magenta">│</span>',
+          '<span class="term-bold term-magenta">╰───────────────────────────────────────────────────╯</span>',
+          '  <span class="term-yellow">• Compositor:</span>      Hyprland Wayland Compositor v0.41.2',
+          '  <span class="term-yellow">• Shell & Bar:</span>     Caelestia Shell (Powered by Quickshell)',
+          '  <span class="term-yellow">• Theme Engine:</span>    Material You 3 Dynamic Palette',
+          '  <span class="term-yellow">• Active Theme:</span>    Caelestia Nocturne / Twilight',
+          '  <span class="term-yellow">• Wallpapers:</span>      ~/fondos/ (caelestia-nocturne.jpg, caelestia-twilight.jpg)',
+          '  <span class="term-yellow">• App Launcher:</span>    Rofi-Wayland / Walker M3 Theme',
+          '  <span class="term-yellow">• Control Center:</span>  Quickshell Interactive System Drawer',
+          '',
+          '<span class="term-dim">Usa "caelestia wallpaper [nocturne|twilight]" para cambiar el fondo.</span>'
+        ].join('\n');
+      }
+
+      if (sub === 'theme') {
+        const theme = args[1];
+        if (!theme) return 'Uso: caelestia theme [nocturne|twilight|tokyo|catppuccin|matrix|nord]';
+        const themeMap = {
+          'nocturne': 'caelestia-nocturne',
+          'twilight': 'caelestia-twilight',
+          'tokyo': 'tokyo',
+          'catppuccin': 'catppuccin',
+          'matrix': 'matrix',
+          'nord': 'nord'
+        };
+        const targetTheme = themeMap[theme] || theme;
+        if (window.setCaelestiaTheme) {
+          window.setCaelestiaTheme(targetTheme);
+          return `<span class="term-green">✔ Tema visual establecido en: ${targetTheme}</span>`;
+        }
+        return `Tema: ${targetTheme}`;
+      }
+
+      if (sub === 'shell' || sub === 'reload') {
+        if (window.showCaelestiaNotification) {
+          window.showCaelestiaNotification('Caelestia Shell', 'Daemon de Quickshell reiniciado con éxito', '🚀');
+        }
+        return '<span class="term-green">✔ Caelestia Shell daemon reiniciado (quickshell -d)</span>';
+      }
+
+      return [
+        '<span class="term-bold term-magenta">Comando CLI Caelestia Desktop:</span>',
+        '  <span class="term-green">caelestia wallpaper [nocturne|twilight|next]</span>  Cambia el fondo de pantalla',
+        '  <span class="term-green">caelestia info</span>                                 Muestra información del entorno',
+        '  <span class="term-green">caelestia theme [nombre]</span>                      Aplica una paleta Material 3',
+        '  <span class="term-green">caelestia shell -d</span>                           Reinicia el daemon de Quickshell'
+      ].join('\n');
+    },
+
+    hyprctl: async function(args) {
+      const sub = args[0] ? args[0].toLowerCase() : 'workspaces';
+      if (sub === 'workspaces') {
+        return [
+          'workspace ID 1 (1) on monitor DP-1: [kitty (terminal)]',
+          'workspace ID 2 (2) on monitor DP-1: [kitty maximized]',
+          'workspace ID 3 (3) on monitor DP-1: [thunar (file manager)]',
+          'workspace ID 4 (4) on monitor DP-1: [missions & lab]',
+          'workspace ID 5 (5) on monitor DP-1: [btop & caelestia settings]'
+        ].join('\n');
+      }
+      if (sub === 'activewindow') {
+        return [
+          'Window 559b12e0 -> kitty (bash):',
+          '  title: bash — usuario@arch-simulator',
+          '  class: kitty',
+          '  workspace: 1 (1)',
+          '  floating: 0',
+          '  fullscreen: 0',
+          '  monitor: 0'
+        ].join('\n');
+      }
+      if (sub === 'monitors') {
+        return 'Monitor DP-1 (ID 0): 3840x2160@144.00Hz at 0x0 (active: true, focused: true)';
+      }
+      if (sub === 'dispatch') {
+        const action = args[1];
+        const val = args[2];
+        if (action === 'workspace' && val && window.switchWorkspace) {
+          window.switchWorkspace(parseInt(val, 10));
+          return `Cambiando a espacio de trabajo ${val}`;
+        }
+      }
+      return 'hyprctl: comando ejecutado. (Subcomandos: workspaces, activewindow, monitors, dispatch)';
+    },
+
+    rofi: async function() {
+      if (window.openAppLauncher) {
+        window.openAppLauncher();
+        return '<span class="term-green">Lanzador Rofi / Caelestia abierto.</span>';
+      }
+      return 'Lanzador activado.';
+    },
+
+    launcher: async function() {
+      return this.commands.rofi.call(this);
+    },
+
+    control: async function() {
+      if (window.toggleControlCenter) {
+        window.toggleControlCenter();
+        return '<span class="term-green">Centro de Control alternado.</span>';
+      }
+      return 'Centro de Control.';
+    },
+
     cowsay: async function(args, pipeInput) {
       let text = args.length > 0 ? args.join(' ') : (pipeInput || '¡Linux es el mejor sistema operativo!');
       text = this.stripHtml(text);

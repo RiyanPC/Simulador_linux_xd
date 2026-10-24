@@ -101,6 +101,18 @@ class MissionManager {
         check: (cmd, output, fs, cwd) => {
           return cmd === 'neofetch' || cmd === 'fastfetch' || cmd.startsWith('df');
         }
+      },
+      {
+        id: 'caelestia_customizer',
+        title: 'Nivel 8: El Maestro de Caelestia (Hyprland & Dotfiles)',
+        desc: 'Domina los comandos de personalización y dotfiles de tu entorno Caelestia.',
+        instruction: 'Cambia el fondo de pantalla ejecutando <code>caelestia wallpaper twilight</code> (o <code>caelestia wallpaper nocturne</code>), o consulta la configuración de Hyprland con <code>cat ~/.config/hypr/hyprland.conf</code>.',
+        hint: 'Escribe <code>caelestia wallpaper twilight</code> o <code>caelestia info</code>.',
+        xpReward: 250,
+        completed: false,
+        check: (cmd, output, fs, cwd) => {
+          return cmd.includes('caelestia') || cmd.includes('hyprland.conf') || cmd.startsWith('hyprctl');
+        }
       }
     ];
   }

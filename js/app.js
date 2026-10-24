@@ -232,6 +232,10 @@ document.addEventListener('DOMContentLoaded', () => {
     { cmd: 'ps aux', desc: 'Muestra los procesos en ejecución', ex: 'ps aux' },
     { cmd: 'nano', desc: 'Editor de texto interactivo en terminal', ex: 'nano notas.txt' },
     { cmd: 'clear', desc: 'Limpia la pantalla de la terminal', ex: 'clear' },
+    { cmd: 'fastfetch', desc: 'Resumen visual del sistema Caelestia Arch Linux', ex: 'fastfetch' },
+    { cmd: 'caelestia wp', desc: 'Cambia el fondo de pantalla (Nocturne / Twilight)', ex: 'caelestia wallpaper next' },
+    { cmd: 'caelestia info', desc: 'Muestra información de Caelestia Shell y Hyprland', ex: 'caelestia info' },
+    { cmd: 'hyprctl', desc: 'Controla el compositor Hyprland y workspaces', ex: 'hyprctl workspaces' },
     { cmd: 'cowsay', desc: 'Divertida vaca parlante de consola', ex: 'cowsay ¡Hola Mundo!' }
   ];
 
@@ -268,13 +272,475 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCheatsheet(e.target.value);
   });
 
-  // 8. Audio Toggle
+  // =========================================================================
+  // CAELESTIA DESKTOP ENVIRONMENT LOGIC & CONTROLS
+  // =========================================================================
+
+  // Elements
+  const wallpaperContainer = document.getElementById('wallpaperContainer');
+  const wallpaperNocturne = document.getElementById('wallpaperNocturne');
+  const wallpaperTwilight = document.getElementById('wallpaperTwilight');
+  const wallpaperToggleBtn = document.getElementById('wallpaperToggleBtn');
+  const wallpaperName = document.getElementById('wallpaperName');
+  const wpCardNocturne = document.getElementById('wpCardNocturne');
+  const wpCardTwilight = document.getElementById('wpCardTwilight');
+
+  const controlCenterPanel = document.getElementById('controlCenterPanel');
+  const controlCenterToggleBtn = document.getElementById('controlCenterToggleBtn');
+  const ccCloseBtn = document.getElementById('ccCloseBtn');
+  const appLauncherModal = document.getElementById('appLauncherModal');
+  const appLauncherBtn = document.getElementById('appLauncherBtn');
+  const launcherSearch = document.getElementById('launcherSearch');
+  const launcherGrid = document.getElementById('launcherGrid');
+  const notificationsContainer = document.getElementById('notificationsContainer');
+  const workspaceLayout = document.getElementById('workspaceLayout');
+  const terminalWindow = document.getElementById('terminalWindow');
+
+  // Media Elements
+  const audioEq = document.getElementById('audioEq');
+  const barPlayBtn = document.getElementById('barPlayBtn');
+  const barMediaTitle = document.getElementById('barMediaTitle');
+  const ccMediaPlayBtn = document.getElementById('ccMediaPlayBtn');
+  const ccMediaPrevBtn = document.getElementById('ccMediaPrevBtn');
+  const ccMediaNextBtn = document.getElementById('ccMediaNextBtn');
+  const ccMediaTitle = document.getElementById('ccMediaTitle');
+  const ccMediaArtist = document.getElementById('ccMediaArtist');
+  const ccMediaProgress = document.getElementById('ccMediaProgress');
+
+  // Window Controls
+  const termMaximizeBtn = document.getElementById('termMaximizeBtn');
+  const termMinimizeBtn = document.getElementById('termMinimizeBtn');
+  const termCloseBtn = document.getElementById('termCloseBtn');
+
+  // Control Center Toggles & Sliders
+  const toggleWifiBtn = document.getElementById('toggleWifiBtn');
+  const wifiStatusText = document.getElementById('wifiStatusText');
+  const toggleBluetoothBtn = document.getElementById('toggleBluetoothBtn');
+  const btStatusText = document.getElementById('btStatusText');
+  const ccToggleSoundBtn = document.getElementById('ccToggleSoundBtn');
+  const fxStatusText = document.getElementById('fxStatusText');
+  const toggleGlowBtn = document.getElementById('toggleGlowBtn');
+  const glowStatusText = document.getElementById('glowStatusText');
+  const ccVolumeSlider = document.getElementById('ccVolumeSlider');
+  const ccVolumeVal = document.getElementById('ccVolumeVal');
+  const ccBrightnessSlider = document.getElementById('ccBrightnessSlider');
+  const ccBrightnessVal = document.getElementById('ccBrightnessVal');
+
+  // 1. Toast Notification Manager
+  window.showCaelestiaNotification = (title, message, icon = '🌌') => {
+    if (window.terminalAudio) {
+      window.terminalAudio.playNotification();
+    }
+    const toast = document.createElement('div');
+    toast.className = 'toast-item';
+    toast.innerHTML = `
+      <span class="toast-icon">${icon}</span>
+      <div style="display:flex;flex-direction:column;">
+        <span style="font-weight:700;font-size:0.8rem;color:var(--accent-cyan);">${title}</span>
+        <span style="font-size:0.72rem;color:var(--text-secondary);">${message}</span>
+      </div>
+    `;
+    notificationsContainer.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 400);
+    }, 3500);
+  };
+
+  // 2. Wallpaper Switcher Engine
+  let currentWallpaper = localStorage.getItem('caelestia_wallpaper') || 'nocturne';
+
+  window.switchCaelestiaWallpaper = (nameOrNext) => {
+    let target = nameOrNext;
+    if (!target || target === 'next' || target === 'toggle') {
+      target = currentWallpaper === 'nocturne' ? 'twilight' : 'nocturne';
+    }
+
+    currentWallpaper = target === 'twilight' ? 'twilight' : 'nocturne';
+    localStorage.setItem('caelestia_wallpaper', currentWallpaper);
+
+    document.body.setAttribute('data-wallpaper', currentWallpaper);
+
+    if (currentWallpaper === 'nocturne') {
+      wallpaperNocturne.classList.add('active');
+      wallpaperTwilight.classList.remove('active');
+      wallpaperName.textContent = 'Nocturne';
+      wpCardNocturne.classList.add('active');
+      wpCardTwilight.classList.remove('active');
+      // If using Caelestia themes, switch palette
+      if (document.body.classList.contains('theme-caelestia-twilight') || document.body.classList.contains('theme-caelestia-nocturne')) {
+        document.body.className = 'theme-caelestia-nocturne';
+        themeSelect.value = 'caelestia-nocturne';
+      }
+    } else {
+      wallpaperTwilight.classList.add('active');
+      wallpaperNocturne.classList.remove('active');
+      wallpaperName.textContent = 'Twilight';
+      wpCardTwilight.classList.add('active');
+      wpCardNocturne.classList.remove('active');
+      if (document.body.classList.contains('theme-caelestia-nocturne') || document.body.classList.contains('theme-caelestia-twilight')) {
+        document.body.className = 'theme-caelestia-twilight';
+        themeSelect.value = 'caelestia-twilight';
+      }
+    }
+
+    window.showCaelestiaNotification('Fondo de Pantalla', `Caelestia ${currentWallpaper.charAt(0).toUpperCase() + currentWallpaper.slice(1)} activo`, '🖼️');
+    return currentWallpaper;
+  };
+
+  wallpaperToggleBtn.addEventListener('click', () => {
+    window.switchCaelestiaWallpaper('next');
+  });
+
+  wpCardNocturne.addEventListener('click', () => {
+    window.switchCaelestiaWallpaper('nocturne');
+  });
+
+  wpCardTwilight.addEventListener('click', () => {
+    window.switchCaelestiaWallpaper('twilight');
+  });
+
+  // Apply initial wallpaper
+  window.switchCaelestiaWallpaper(currentWallpaper);
+
+  // 3. Caelestia Control Center Flyout
+  window.toggleControlCenter = () => {
+    const isActive = controlCenterPanel.classList.toggle('active');
+    if (window.terminalAudio) window.terminalAudio.playWindowAction();
+    if (isActive) {
+      appLauncherModal.classList.remove('active');
+    }
+  };
+
+  controlCenterToggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    window.toggleControlCenter();
+  });
+
+  ccCloseBtn.addEventListener('click', () => {
+    controlCenterPanel.classList.remove('active');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (controlCenterPanel.classList.contains('active') && 
+        !controlCenterPanel.contains(e.target) && 
+        !controlCenterToggleBtn.contains(e.target)) {
+      controlCenterPanel.classList.remove('active');
+    }
+  });
+
+  // 4. Caelestia App Launcher (Rofi / Walker)
+  window.openAppLauncher = () => {
+    appLauncherModal.classList.add('active');
+    controlCenterPanel.classList.remove('active');
+    if (window.terminalAudio) window.terminalAudio.playWindowAction();
+    setTimeout(() => {
+      launcherSearch.value = '';
+      filterLauncher('');
+      launcherSearch.focus();
+    }, 60);
+  };
+
+  window.closeAppLauncher = () => {
+    appLauncherModal.classList.remove('active');
+  };
+
+  appLauncherBtn.addEventListener('click', () => {
+    if (appLauncherModal.classList.contains('active')) {
+      window.closeAppLauncher();
+    } else {
+      window.openAppLauncher();
+    }
+  });
+
+  appLauncherModal.addEventListener('click', (e) => {
+    if (e.target === appLauncherModal) {
+      window.closeAppLauncher();
+    }
+  });
+
+  // Launcher Search Filtering
+  function filterLauncher(query) {
+    const items = launcherGrid.querySelectorAll('.launcher-item');
+    const q = query.toLowerCase().trim();
+    items.forEach(item => {
+      const title = item.querySelector('.app-title').textContent.toLowerCase();
+      const desc = item.querySelector('.app-desc').textContent.toLowerCase();
+      if (!q || title.includes(q) || desc.includes(q)) {
+        item.style.display = 'flex';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+
+  launcherSearch.addEventListener('input', (e) => {
+    filterLauncher(e.target.value);
+  });
+
+  // Launcher Items Click Handlers
+  launcherGrid.querySelectorAll('.launcher-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const app = item.getAttribute('data-app');
+      window.closeAppLauncher();
+
+      if (app === 'terminal') {
+        window.switchWorkspace(1);
+        terminal.input.focus();
+      } else if (app === 'explorer') {
+        window.switchWorkspace(3);
+      } else if (app === 'missions') {
+        window.switchWorkspace(4);
+      } else if (app === 'nano') {
+        window.openNanoEditor('/home/usuario/documentos/notas.txt', fs.readFile('/home/usuario/documentos/notas.txt') || '');
+      } else if (app === 'cheatsheet') {
+        const btn = document.querySelector('[data-tab="tabCheatsheet"]');
+        if (btn) btn.click();
+      } else if (app === 'wallpapers') {
+        window.switchCaelestiaWallpaper('next');
+      } else if (app === 'control') {
+        window.toggleControlCenter();
+      } else if (app === 'fastfetch') {
+        window.switchWorkspace(1);
+        terminal.input.value = 'fastfetch';
+        terminal.submitCommand();
+      }
+    });
+  });
+
+  // Global Keyboard Shortcuts (Alt + Space, ESC)
+  document.addEventListener('keydown', (e) => {
+    // Alt + Space opens App Launcher
+    if (e.altKey && e.code === 'Space') {
+      e.preventDefault();
+      if (appLauncherModal.classList.contains('active')) {
+        window.closeAppLauncher();
+      } else {
+        window.openAppLauncher();
+      }
+      return;
+    }
+
+    // Escape closes modals
+    if (e.key === 'Escape') {
+      if (appLauncherModal.classList.contains('active')) {
+        window.closeAppLauncher();
+      }
+      if (controlCenterPanel.classList.contains('active')) {
+        controlCenterPanel.classList.remove('active');
+      }
+    }
+  });
+
+  // 5. Hyprland Workspace Switcher Engine
+  const wsButtons = document.querySelectorAll('.workspaces-pill .ws-btn');
+  window.switchWorkspace = (num) => {
+    wsButtons.forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.getAttribute('data-workspace'), 10) === num);
+    });
+
+    if (window.terminalAudio) {
+      window.terminalAudio.playWorkspaceSwitch();
+    }
+
+    document.body.setAttribute('data-workspace', num);
+
+    if (num === 1) {
+      workspaceLayout.classList.remove('maximized');
+      const btn = document.querySelector('[data-tab="tabExplorer"]');
+      if (btn) btn.click();
+      setTimeout(() => terminal.input.focus(), 50);
+    } else if (num === 2) {
+      workspaceLayout.classList.add('maximized');
+      setTimeout(() => terminal.input.focus(), 50);
+    } else if (num === 3) {
+      workspaceLayout.classList.remove('maximized');
+      const btn = document.querySelector('[data-tab="tabExplorer"]');
+      if (btn) btn.click();
+    } else if (num === 4) {
+      workspaceLayout.classList.remove('maximized');
+      const btn = document.querySelector('[data-tab="tabMissions"]');
+      if (btn) btn.click();
+    } else if (num === 5) {
+      workspaceLayout.classList.remove('maximized');
+      window.toggleControlCenter();
+    }
+  };
+
+  wsButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const wsNum = parseInt(btn.getAttribute('data-workspace'), 10);
+      window.switchWorkspace(wsNum);
+    });
+  });
+
+  // Dock Buttons
+  document.getElementById('dockTermBtn').addEventListener('click', () => window.switchWorkspace(1));
+  document.getElementById('dockFilesBtn').addEventListener('click', () => window.switchWorkspace(3));
+  document.getElementById('dockMissionsBtn').addEventListener('click', () => window.switchWorkspace(4));
+
+  // Window Controls (Maximize / Minimize / Close)
+  termMaximizeBtn.addEventListener('click', () => {
+    workspaceLayout.classList.toggle('maximized');
+    if (window.terminalAudio) window.terminalAudio.playWindowAction();
+    window.showCaelestiaNotification('Hyprland Tiling', workspaceLayout.classList.contains('maximized') ? 'Terminal Maximizado' : 'Modo Dividido', '🪟');
+  });
+
+  termMinimizeBtn.addEventListener('click', () => {
+    terminalWindow.style.transform = 'scale(0.96)';
+    setTimeout(() => terminalWindow.style.transform = '', 200);
+    if (window.terminalAudio) window.terminalAudio.playWindowAction();
+  });
+
+  termCloseBtn.addEventListener('click', () => {
+    terminal.print('<span class="term-yellow">Para reiniciar la sesión usa "clear" o el botón de Reiniciar VFS.</span>');
+  });
+
+  // 6. Ambient Lo-Fi Media Player
+  const playlist = [
+    { title: '♪ Caelestia Ambient — Starlight Waves', artist: 'Arch Starlight Waves' },
+    { title: '♪ Hyprland Horizon — Cyber Chill', artist: 'Wayland Soundscapes' },
+    { title: '♪ Caelestia Lo-Fi — Nocturne Glow', artist: 'Quickshell Beats' }
+  ];
+  let currentTrackIdx = 0;
+  let isMediaPlaying = false;
+  let progressInterval = null;
+  let progressVal = 35;
+
+  function updateTrackDisplay() {
+    const track = playlist[currentTrackIdx];
+    barMediaTitle.textContent = track.title;
+    ccMediaTitle.textContent = track.title.replace('♪ ', '');
+    ccMediaArtist.textContent = track.artist;
+  }
+
+  function setPlaybackState(playing) {
+    isMediaPlaying = playing;
+    audioEq.classList.toggle('playing', playing);
+    barPlayBtn.innerHTML = playing ? '⏸' : '<svg class="play-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>';
+    ccMediaPlayBtn.textContent = playing ? '⏸' : '▶';
+
+    if (playing) {
+      if (!progressInterval) {
+        progressInterval = setInterval(() => {
+          progressVal = (progressVal + 1) % 100;
+          ccMediaProgress.style.width = `${progressVal}%`;
+        }, 1200);
+      }
+    } else {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+    }
+  }
+
+  function toggleMusic() {
+    const active = window.terminalAudio ? window.terminalAudio.toggleAmbientMusic() : false;
+    setPlaybackState(active);
+    if (active) {
+      window.showCaelestiaNotification('Reproduciendo', playlist[currentTrackIdx].title, '🎵');
+    }
+  }
+
+  barPlayBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleMusic();
+  });
+
+  document.getElementById('barMediaPlayer').addEventListener('click', () => {
+    toggleMusic();
+  });
+
+  ccMediaPlayBtn.addEventListener('click', () => {
+    toggleMusic();
+  });
+
+  ccMediaNextBtn.addEventListener('click', () => {
+    currentTrackIdx = (currentTrackIdx + 1) % playlist.length;
+    updateTrackDisplay();
+    progressVal = 0;
+    ccMediaProgress.style.width = '0%';
+  });
+
+  ccMediaPrevBtn.addEventListener('click', () => {
+    currentTrackIdx = (currentTrackIdx - 1 + playlist.length) % playlist.length;
+    updateTrackDisplay();
+    progressVal = 0;
+    ccMediaProgress.style.width = '0%';
+  });
+
+  // 7. Control Center Quick Toggles & Sliders
+  toggleWifiBtn.addEventListener('click', () => {
+    const isActive = toggleWifiBtn.classList.toggle('active');
+    wifiStatusText.textContent = isActive ? 'Caelestia-5G' : 'Desconectado';
+    window.showCaelestiaNotification('Wi-Fi', isActive ? 'Conectado a Caelestia-5G' : 'Wi-Fi desactivado', '📶');
+  });
+
+  toggleBluetoothBtn.addEventListener('click', () => {
+    const isActive = toggleBluetoothBtn.classList.toggle('active');
+    btStatusText.textContent = isActive ? 'Buds Pro' : 'Desconectado';
+    window.showCaelestiaNotification('Bluetooth', isActive ? 'Conectado a Buds Pro' : 'Bluetooth apagado', '🎧');
+  });
+
+  function syncSoundUI(isEnabled) {
+    soundToggleBtn.classList.toggle('active', isEnabled);
+    ccToggleSoundBtn.classList.toggle('active', isEnabled);
+    fxStatusText.textContent = isEnabled ? 'Activado' : 'Desactivado';
+    soundToggleBtn.innerHTML = isEnabled 
+      ? `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg> FX: ON`
+      : `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg> FX: OFF`;
+  }
+
   soundToggleBtn.addEventListener('click', () => {
     const isEnabled = window.terminalAudio ? window.terminalAudio.toggle() : false;
-    soundToggleBtn.classList.toggle('active', isEnabled);
-    soundToggleBtn.innerHTML = isEnabled 
-      ? `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg> Sonido: ON`
-      : `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg> Sonido: OFF`;
+    syncSoundUI(isEnabled);
+  });
+
+  ccToggleSoundBtn.addEventListener('click', () => {
+    const isEnabled = window.terminalAudio ? window.terminalAudio.toggle() : false;
+    syncSoundUI(isEnabled);
+  });
+
+  toggleGlowBtn.addEventListener('click', () => {
+    const isActive = toggleGlowBtn.classList.toggle('active');
+    glowStatusText.textContent = isActive ? 'Animado' : 'Estático';
+    const termWin = document.getElementById('terminalWindow');
+    if (termWin) {
+      termWin.style.borderWidth = isActive ? '1.5px' : '1px';
+    }
+  });
+
+  ccVolumeSlider.addEventListener('input', (e) => {
+    const val = e.target.value;
+    ccVolumeVal.textContent = `${val}%`;
+    if (window.terminalAudio) {
+      window.terminalAudio.volume = (val / 100) * 0.5;
+    }
+  });
+
+  ccBrightnessSlider.addEventListener('input', (e) => {
+    const val = e.target.value;
+    ccBrightnessVal.textContent = `${val}%`;
+    if (wallpaperContainer) {
+      wallpaperContainer.style.filter = `brightness(${val / 100})`;
+    }
+  });
+
+  // 8. Theme Switcher Sync
+  window.setCaelestiaTheme = (themeName) => {
+    document.body.className = `theme-${themeName}`;
+    themeSelect.value = themeName;
+    if (themeName === 'caelestia-twilight') {
+      window.switchCaelestiaWallpaper('twilight');
+    } else if (themeName === 'caelestia-nocturne') {
+      window.switchCaelestiaWallpaper('nocturne');
+    }
+  };
+
+  themeSelect.addEventListener('change', (e) => {
+    window.setCaelestiaTheme(e.target.value);
   });
 
   // 9. Reset File System
@@ -283,32 +749,28 @@ document.addEventListener('DOMContentLoaded', () => {
       fs.reset();
       terminal.setCwd('/home/usuario');
       terminal.print('<div class="term-green">✔ Sistema de archivos restaurado con éxito.</div>');
+      window.showCaelestiaNotification('Sistema', 'VFS restaurado a configuración de fábrica', '🔄');
     }
   });
 
-  // 10. Theme Selector
-  themeSelect.addEventListener('change', (e) => {
-    document.body.className = `theme-${e.target.value}`;
-  });
-
-  // 11. Live Clock & CPU in Top Bar
+  // 10. Live Clock & CPU Wave
   const liveClockEl = document.getElementById('liveClock');
   const cpuPercentEl = document.getElementById('cpuPercent');
+  const ccCpuVal = document.getElementById('ccCpuVal');
   function updateSystemMetrics() {
     const now = new Date();
     liveClockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-    // Procedural CPU wave (realistic oscillation between 8% and 34%)
-    const wave = Math.round(18 + Math.sin(Date.now() / 4000) * 10 + Math.random() * 5);
+    const wave = Math.round(16 + Math.sin(Date.now() / 3500) * 8 + Math.random() * 4);
     cpuPercentEl.textContent = `${wave}%`;
+    if (ccCpuVal) ccCpuVal.textContent = `${wave}%`;
   }
   setInterval(updateSystemMetrics, 1000);
   updateSystemMetrics();
 
-  // 12. Tab Switcher between File Explorer, Missions, and Cheatsheet
+  // 11. Tab Switcher
   const tabBtns = document.querySelectorAll('.sidebar-tab-btn');
   const tabPanels = document.querySelectorAll('.tab-panel');
-
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const targetTab = btn.getAttribute('data-tab');
@@ -316,21 +778,22 @@ document.addEventListener('DOMContentLoaded', () => {
       tabPanels.forEach(p => p.classList.remove('active'));
 
       btn.classList.add('active');
-      document.getElementById(targetTab).classList.add('active');
+      const targetEl = document.getElementById(targetTab);
+      if (targetEl) targetEl.classList.add('active');
     });
   });
 
-  // 13. Initial Welcome Output in Terminal
+  // 12. Welcome Message in Terminal
   terminal.print([
     '<div class="term-welcome-box">',
-    '  <span class="welcome-title">🐧 SIMULADOR DE COMANDOS LINUX (INTERACTIVE LAB)</span>',
-    '  <span class="welcome-subtitle">Entorno seguro y completo para aprender GNU/Linux en el navegador.</span>',
+    '  <span class="welcome-title">🌌 CAELESTIA DESKTOP ENVIRONMENT — ARCH LINUX</span>',
+    '  <span class="welcome-subtitle">Laboratorio interactivo GNU/Linux con Hyprland & Quickshell Shell.</span>',
     '  <div class="welcome-tips">',
-    '    • Escribe <span class="term-cyan">help</span> para ver el listado de comandos disponibles.',
-    '    • Escribe <span class="term-cyan">neofetch</span> para ver la ficha del sistema.',
-    '    • Usa la tecla <span class="term-yellow">Tab</span> para autocompletar comandos y rutas.',
-    '    • Usa las flechas <span class="term-yellow">↑ / ↓</span> para navegar por el historial.',
-    '    • ¡Sigue las <b>Misiones</b> en el panel derecho para ganar XP y desbloquear insignias!',
+    '    • Escribe <span class="term-cyan">fastfetch</span> o <span class="term-cyan">neofetch</span> para ver la ficha del sistema.',
+    '    • Escribe <span class="term-magenta">caelestia info</span> o <span class="term-magenta">caelestia wallpaper next</span> para cambiar de fondo.',
+    '    • Usa <span class="term-yellow">Alt + Espacio</span> para abrir el Lanzador de Aplicaciones (Rofi / Walker).',
+    '    • Haz clic en <b>Control</b> o en el logo de Caelestia en la barra superior para abrir el panel.',
+    '    • ¡Explora los archivos de configuración en <span class="term-green">~/.config/hypr/hyprland.conf</span>!',
     '  </div>',
     '</div>'
   ].join('\n'));
@@ -339,7 +802,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderFileExplorer();
   updateMissionUI();
   renderCheatsheet();
+  updateTrackDisplay();
 
-  // Initial auto-focus terminal input
   setTimeout(() => terminal.input.focus(), 100);
 });
